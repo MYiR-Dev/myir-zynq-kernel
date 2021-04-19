@@ -112,7 +112,7 @@
 			fmr,display-color-space = <0x0>; 	//RGB
 			fmr,display-interface = <0x0>;
 			active-layer = <0>;
-			videomode = "1920x1080";
+			videomode = "800x480_LCDV2";
 
 			fmr-video-params {
 				640x480_LCD1{

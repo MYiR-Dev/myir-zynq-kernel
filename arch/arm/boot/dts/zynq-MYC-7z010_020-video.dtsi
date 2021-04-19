@@ -171,6 +171,28 @@
 					dynclk-lockL = <0xD13FA401>;
 					dynclk-fltr_lockH = <0x6300FF>;
 				};
+                800x600_LCD {
+					name = "800x600_LCD";
+					refresh = <60>;
+					xres = <800>;
+					yres = <600>;
+					pixclock-khz = <40000>;
+					left-margin = <75>;
+					right-margin = <75>;
+					upper-margin = <50>;
+					lower-margin = <60>;
+					hsync-len = <10>;
+					vsync-len = <2>;
+					sync = <0>;
+					vmode = <0>;
+
+					dynclk-clk0L = <0x800042>;
+					dynclk-clkFBL = <0x00C3>;
+					dynclk-clkFBH_clk0H = <0>;
+					dynclk-divclk = <0x1041>;
+					dynclk-lockL = <0x7E8FA401>;
+					dynclk-fltr_lockH = <0x73008C>;
+				};
 				1024x600 {
 					name = "1024x600";
 					refresh = <60>;
