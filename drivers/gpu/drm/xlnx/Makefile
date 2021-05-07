@@ -19,3 +19,5 @@ obj-$(CONFIG_DRM_XLNX_SDI) += xlnx-sdi.o
 
 zynqmp-dpsub-objs += zynqmp_disp.o zynqmp_dpsub.o zynqmp_dp.o
 obj-$(CONFIG_DRM_ZYNQMP_DPSUB) += zynqmp-dpsub.o
+
+obj-$(CONFIG_DRM_MYIR_ENCODER) += myir_encoder.o

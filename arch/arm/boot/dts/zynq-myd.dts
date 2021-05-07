@@ -5,13 +5,13 @@
  */
 /dts-v1/;
 #include "zynq-7000.dtsi"
-// #include "zynq-MYC-7z010_020-video.dtsi"
+#include "zynq-MYC-7z010_020-video.dtsi"
 // #include "zynq-MYC-7z015-video.dtsi"
 // #include "zynq-MYC-7z015-pcie.dtsi"
 
 / {
 	chosen {
-		bootargs = "console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0p2 rw rootwait clk_ignore_unused";
+		bootargs = "console=ttyPS0,115200 earlyprintk root=/dev/mmcblk0p2 rw rootwait clk_ignore_unused cma=128M";
 		stdout-path = "serial0:115200n8";
 	};
 	

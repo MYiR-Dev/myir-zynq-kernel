@@ -5,10 +5,32 @@
  */
 
  &i2c0 {
+
+    //  hdmi-transmitter@3b {
+	// 	compatible = "sil,sii9022";
+	// 	reg = <0x3b>;
+	// 	// reset-gpios = <&gpioc 7 GPIO_ACTIVE_LOW>;
+	// 	interrupt-parent = <&intc>;
+	// 	interrupts = <0x0 29 0x4>;
+	// 	status = "okay";
+
+	// 	ports {
+	// 		#address-cells = <1>;
+	// 		#size-cells = <0>;
+
+	// 		port@0 {
+	// 			reg = <0>;
+	// 			sii9022_in: endpoint {
+	// 				remote-endpoint = <&dmaengine_crtc>;
+	// 			};
+	// 		};
+	// 	};
+	// };
+
     sii902x@3b {
         compatible = "sii902x";
         reg = <0x3b>;
-        interrupt-parent = <0x3>;
+        interrupt-parent = <&intc>;
         interrupts = <0x0 29 0x4>;
         mode_str = "1920x1080";
         bits-per-pixel = <0x10>;
@@ -19,9 +41,9 @@
         compatible = "ft5x06_ts";
         status = "okay";
         reg = <0x38>;
-        tp_int = <&gpio0 106 0x1>;
-        tp_resetn = <&gpio0 107 0x1>;
-        bl_en = <&gpio0 109 0x1>;
+        tp_int = <&gpio0 54 0x1>;
+        tp_resetn = <&gpio0 56 0x1>;
+        bl_en = <&gpio0 55 0x1>;
         polling_mode = [00];
         multi_touch = [00];
     };
@@ -31,11 +53,65 @@
         status = "okay";
         reg = <0x49>;
         interrupt-parent = <&gpio0>;
-        interrupts = <0x0 106 4>;
-        gpios = <&gpio0 106 1>;
+        interrupts = <0x0 54 4>;
+        gpios = <&gpio0 54 1>;
         ti,x-plate-ohms = <0x28f>;
         ti,poll-period = <0x0 0x1e>;
     };
+};
+
+&amba {
+
+    // hdmi_encoder_0:hdmi_encoder {
+	// 	compatible = "digilent,drm-encoder";
+	// 	// digilent,edid-i2c = <&i2c0>;
+
+    //     ports {
+	// 		#address-cells = <1>;
+	// 		#size-cells = <0>;
+	// 		encoder_port: port@0 {
+	// 			reg = <0>;
+	// 			hdmi_encoder: endpoint {
+	// 				remote-endpoint = <&dmaengine_crtc>;
+	// 			};
+	// 		};
+	// 	};
+	// };
+
+    myir_encoder: myir_encoder  {
+        compatible = "myir-drm-encoder";
+        clocks = <&axi_dynclk_0>;
+        gpios = <&gpio0 57 0x0>; // hdmi lcd display mode switch
+        myir,connector-type = "LCD"; // choose HDMI or LCD display mode
+        ports {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            encoder_port: port@0 {
+                reg = <0>;
+                drm_encoder: endpoint {
+                    remote-endpoint = <&pl_disp_crtc>;
+                };
+            };
+        };
+    };
+
+	v_drm_dmaengine_drv: drm-dmaengine-drv {
+		compatible = "xlnx,pl-disp";
+		dmas = <&axi_vdma_0 0>;
+		dma-names = "dma0";
+		xlnx,vformat = "AR24";
+		xlnx,bridge = <&v_tc_0>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+        status = "okay";
+
+		pl_display_port: port@0 {
+			reg = <0>;
+			pl_disp_crtc: endpoint {
+				remote-endpoint = <&drm_encoder>;
+			};
+		};
+	};
 };
 
 / {
@@ -44,6 +120,41 @@
 		#size-cells = <1>;
 		compatible = "simple-bus";
 		ranges ;
+
+        axi_dynclk_0: axi_dynclk@43c00000 {
+            #clock-cells = <0x0>;	
+			clock-names = "s00_axi_aclk";
+			clocks = <&clkc 15>;
+			compatible = "digilent,axi-dynclk";
+			reg = <0x43c00000 0x10000>;
+			xlnx,s00-axi-addr-width = <0x5>;
+			xlnx,s00-axi-data-width = <0x20>;
+		};
+		v_tc_0: v_tc@43c10000 {
+			clock-names = "clk", "s_axi_aclk";
+			clocks = <&misc_clk_0>, <&clkc 15>;
+            compatible = "xlnx,bridge-v-tc-6.1";
+	        xlnx,pixels-per-clock = <1>;
+			interrupt-names = "irq";
+			interrupt-parent = <&intc>;
+			interrupts = <0 31 4>;
+			reg = <0x43c10000 0x10000>;
+			xlnx,generator ;
+		};
+
+        /* For LCD */
+		// misc_clk_0: misc_clk_0 {
+		// 	#clock-cells = <0>;
+		// 	clock-frequency = <33333333>;
+		// 	compatible = "fixed-clock";
+		// };
+
+		/* For HDMI */
+		misc_clk_0: misc_clk_0 {
+			#clock-cells = <0>;
+			clock-frequency = <148500000>;
+			compatible = "fixed-clock";
+		};
 
 		axi_vdma_0: dma@43000000 {
 			#dma-cells = <1>;
@@ -62,240 +173,6 @@
 				interrupts = <0 30 4>;
 				xlnx,datawidth = <0x20>;
 				xlnx,device-id = <0x0>;
-			};
-		};
-
-		// v_tc_0: v_tc@43c00000 {
-		// 	clock-names = "clk", "s_axi_aclk";
-		// 	clocks = <&misc_clk_0>, <&clkc 15>;
-		// 	compatible = "xlnx,v-tc-6.1", "xlnx,v-tc-6.1";
-		// 	interrupt-names = "irq";
-		// 	interrupt-parent = <&intc>;
-		// 	interrupts = <0 31 4>;
-		// 	reg = <0x43c00000 0x10000>;
-		// 	xlnx,generator ;
-		// };
-
-		/* For LCD */
-		// misc_clk_0: misc_clk_0 {
-		// 	#clock-cells = <0>;
-		// 	clock-frequency = <33333333>;
-		// 	compatible = "fixed-clock";
-		// };
-
-		/* For HDMI */
-		// misc_clk_0: misc_clk_0 {
-		// 	#clock-cells = <0>;
-		// 	clock-frequency = <148500000>;
-		// 	compatible = "fixed-clock";
-		// };
-
-		axi_vdma_vga: axi_vdma_vga@43c00000 {
-			compatible = "myir,vdma-fb";
-			dmas = <&axi_vdma_0 0>;
-			dma-names = "axivdma";
-			reg = <0x43c00000 0x10000>;
-			fmr,clk-baseaddr = <0x43c10000>;
-			fmr,clk-size = <0x10000>;
-			fmr,vtc-baseaddr = <0x43c00000>; 
-			fmr,vtc-size = <0x10000>; 
-			fmr,display-color-space = <0x0>; 	//RGB
-			fmr,display-interface = <0x0>;
-			active-layer = <0>;
-			videomode = "800x480_LCDV2";
-
-			fmr-video-params {
-				640x480_LCD1{
-					name = "640x480_LCD1";
-					refresh = <60>;
-					xres = <640>;
-					yres = <480>;
-					pixclock-khz = <25000>;
-					left-margin = <16>;
-					right-margin = <48>;
-					upper-margin = <10>;
-					lower-margin = <33>;
-					hsync-len = <96>;
-					vsync-len = <2>;
-					sync = <0>;
-					vmode = <0>;
-
-					dynclk-clk0L = <0x0104>;
-					dynclk-clkFBL = <0x0145>;
-					dynclk-clkFBH_clk0H = <0>;
-					dynclk-divclk = <0x1041>;
-					dynclk-lockL = <0x3E8FA401>;
-					dynclk-fltr_lockH = <0x4B00E7>;
-				};
-				480x272_LCDV1{
-					name = "480x272_LCDV1";
-					refresh = <60>;
-					xres = <480>;
-					yres = <272>;
-					pixclock-khz = <10000>;
-					left-margin = <40>;
-					right-margin = <40>;
-					upper-margin = <29>;
-					lower-margin = <13>;
-					hsync-len = <48>;
-					vsync-len = <3>;
-					sync = <0>;
-					vmode = <0>;
-
-					dynclk-clk0L = <0x0186>;
-					dynclk-clkFBL = <0x00C3>;
-					dynclk-clkFBH_clk0H = <0>;
-					dynclk-divclk = <0x1041>;
-					dynclk-lockL = <0x7E8FA401>;
-					dynclk-fltr_lockH = <0x73008C>;
-				};
-				800x480_LCDV2 {
-					name = "800x480_LCDV2";
-					refresh = <60>;
-					xres = <800>;
-					yres = <480>;
-					pixclock-khz = <33330>;
-					left-margin = <210>;
-					right-margin = <44>;
-					upper-margin = <22>;
-					lower-margin = <21>;
-					hsync-len = <2>;
-					vsync-len = <2>;
-					sync = <0>;
-					vmode = <0>;
-
-					dynclk-clk0L = <0x8000C4>;
-					dynclk-clkFBL = <0x800452>;
-					dynclk-clkFBH_clk0H = <0>;
-					dynclk-divclk = <0x2042>;
-					dynclk-lockL = <0xD13FA401>;
-					dynclk-fltr_lockH = <0x6300FF>;
-				};
-                800x600_LCD {
-					name = "800x600_LCD";
-					refresh = <60>;
-					xres = <800>;
-					yres = <600>;
-					pixclock-khz = <40000>;
-					left-margin = <75>;
-					right-margin = <75>;
-					upper-margin = <50>;
-					lower-margin = <60>;
-					hsync-len = <10>;
-					vsync-len = <2>;
-					sync = <0>;
-					vmode = <0>;
-
-					dynclk-clk0L = <0x800042>;
-					dynclk-clkFBL = <0x00C3>;
-					dynclk-clkFBH_clk0H = <0>;
-					dynclk-divclk = <0x1041>;
-					dynclk-lockL = <0x7E8FA401>;
-					dynclk-fltr_lockH = <0x73008C>;
-				};
-				1024x600 {
-					name = "1024x600";
-					refresh = <60>;
-					xres = <1024>;
-					yres = <600>;
-					pixclock-khz = <51200>;
-					left-margin = <160>;//H Front Porch
-					right-margin = <140>;//H Back Porch
-					upper-margin = <12>;//V Back Porch
-					lower-margin = <20>;//V Front Porch
-					hsync-len = <20>;//H Sync Time
-					vsync-len = <3>;//V Sync Time
-					sync = <0>;
-					vmode = <0>;
-				};	
-				1024x768 {
-					name = "1024x768";
-					refresh = <60>;
-					xres = <1024>;
-					yres = <768>;
-					pixclock-khz = <65000>;
-					left-margin = <24>;//H Front Porch
-					right-margin = <160>;//H Back Porch
-					upper-margin = <29>;//V Back Porch
-					lower-margin = <3>;//V Front Porch
-					hsync-len = <136>;//H Sync Time
-					vsync-len = <6>;//V Sync Time
-					sync = <0>;
-					vmode = <0>;
-
-					dynclk-clk0L = <0x0041>;
-					dynclk-clkFBL = <0x800187>;
-					dynclk-clkFBH_clk0H = <0>;
-					dynclk-divclk = <0x0041>;
-					dynclk-lockL = <0xEEEFA401>;
-					dynclk-fltr_lockH = <0xB300FF>;
-				};
-				1280x720 {
-					name = "1280x720";
-					refresh = <60>;
-					xres = <1280>;
-					yres = <720>;
-					pixclock-khz = <74250>;
-					left-margin = <220>;
-					right-margin = <110>;
-					upper-margin = <20>;
-					lower-margin = <5>;
-					hsync-len = <40>;
-					vsync-len = <5>;
-					sync = <1>;
-					vmode = <0>;
-
-					dynclk-clk0L = <0x0041>;
-					dynclk-clkFBL = <0x069A>;
-					dynclk-clkFBH_clk0H = <0>;
-					dynclk-divclk = <0x20C4>;
-					dynclk-lockL = <0xCFAFA401>;
-					dynclk-fltr_lockH = <0xA300FF>;
-				};
-				1680x1050 {
-					name = "1680x1050";
-					refresh = <60>;
-					xres = <1680>;
-					yres = <1050>;
-					pixclock-khz = <119000>;
-					left-margin = <80>;
-					right-margin = <48>;
-					upper-margin = <21>;
-					lower-margin = <3>;
-					hsync-len = <32>;
-					vsync-len = <6>;
-					sync = <0>;
-					vmode = <0>;
-
-					dynclk-clk0L = <0x400041>;
-					dynclk-clkFBL = <0x00C3>;
-					dynclk-clkFBH_clk0H = <0>;
-					dynclk-divclk = <0x1041>;
-					dynclk-lockL = <0x7E8FA401>;
-					dynclk-fltr_lockH = <0x73008C>;
-				};
-				1920x1080 {
-					name = "1920x1080";
-					refresh = <60>;
-					xres = <1920>;
-					yres = <1080>;
-					pixclock-khz = <148500>;
-					left-margin = <88>;	//H Front Porch
-					right-margin = <148>;	//H Back Porch
-					upper-margin = <36>;	//V Back Porch
-					lower-margin = <4>;	//V Front Porch
-					hsync-len = <44>;	//H Sync Time
-					vsync-len = <5>;	//V Sync Time
-					sync = <0>;
-					vmode = <0>;
-
-					dynclk-clk0L = <0x400041>;
-					dynclk-clkFBL = <0x069A>;
-					dynclk-clkFBH_clk0H = <0>;
-					dynclk-divclk = <0x20C4>;
-					dynclk-lockL = <0xCFAFA401>;
-					dynclk-fltr_lockH = <0xA300FF>;
-				};
 			};
 		};
 	};

@@ -734,9 +734,9 @@ int myir_edid_read(struct i2c_adapter *adp, unsigned short addr,
 
 	extblknum = myir_edid_readblk(adp, addr, edid);
 
-	printk(KERN_ERR"extblknum1: %d\n", extblknum);
-	printk(KERN_ERR"extblknum2: %d\n", extblknum);
-	printk(KERN_ERR"extblknum3: %d\n", extblknum);
+	// printk(KERN_ERR"extblknum1: %d\n", extblknum);
+	// printk(KERN_ERR"extblknum2: %d\n", extblknum);
+	// printk(KERN_ERR"extblknum3: %d\n", extblknum);
 	
 	if (extblknum < 0)
 		return extblknum;
