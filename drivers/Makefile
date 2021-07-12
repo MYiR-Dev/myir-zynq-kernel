@@ -58,6 +58,8 @@ obj-y				+= char/
 # iommu/ comes before gpu as gpu are using iommu controllers
 obj-y				+= iommu/
 
+obj-y				+= i2c/ i3c/ media/
+
 # gpu/ comes after char for AGP vs DRM startup and after iommu
 obj-y				+= gpu/
 
@@ -110,7 +112,7 @@ obj-$(CONFIG_SERIO)		+= input/serio/
 obj-$(CONFIG_GAMEPORT)		+= input/gameport/
 obj-$(CONFIG_INPUT)		+= input/
 obj-$(CONFIG_RTC_LIB)		+= rtc/
-obj-y				+= i2c/ i3c/ media/
+# obj-y				+= i2c/ i3c/ media/
 obj-y				+= video/
 obj-$(CONFIG_PPS)		+= pps/
 obj-y				+= ptp/

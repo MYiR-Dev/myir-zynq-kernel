@@ -358,6 +358,10 @@ static irqreturn_t sii902x_detect_handler(int irq, void *data)
 		sii902x.waiting_for_fb = true;
 	}
 
+    // int status = i2c_smbus_read_byte_data(sii902x.client, 0x3d);
+    // msleep(5);
+    // i2c_smbus_write_byte_data(sii902x.client, 0x3d, status);
+
 	return IRQ_HANDLED;
 }
 

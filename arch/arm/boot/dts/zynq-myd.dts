@@ -32,7 +32,7 @@
 			compatible = "arm,cortex-a9";
 			device_type = "cpu";
 			reg = <0>;
-			clocks = <&clkc 3>;
+			clocks = <&clkc 4>;
 			clock-latency = <1000>;
 			cpu0-supply = <&regulator_vccpint>;
 			operating-points = <

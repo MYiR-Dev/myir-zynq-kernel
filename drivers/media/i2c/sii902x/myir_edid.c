@@ -30,8 +30,21 @@
 #include <linux/fb.h>
 #include "myir_edid.h"
 #include "edid.h"
+#include <drm/drm_atomic_helper.h>
+#include <drm/drm_crtc_helper.h>
+#include <drm/drmP.h>
+#include <drm/drm_probe_helper.h>
+#include <linux/clk.h>
+#include <linux/component.h>
+#include <linux/device.h>
+#include <linux/of_device.h>
+#include <linux/of_graph.h>
+#include <linux/phy/phy.h>
+#include <video/videomode.h>
+#include <linux/of_gpio.h>
+#include <linux/i2c.h>
 
-#define DEBUG	1  /* define this for verbose EDID parsing output */
+// #define DEBUG	1  /* define this for verbose EDID parsing output */
 #ifdef DEBUG
 #define DPRINTK(fmt, args...) printk(KERN_INFO fmt, ## args)
 #else
@@ -628,6 +641,7 @@ static int myir_edid_readblk(struct i2c_adapter *adp,
 	extblknum = edid[0x7E];
 	
 	if (extblknum) {
+        msleep(20);
 		regaddr = 128;
 		msg[1].buf = edid + EDID_LENGTH;
 
