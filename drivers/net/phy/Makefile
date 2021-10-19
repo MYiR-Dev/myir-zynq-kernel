@@ -80,3 +80,4 @@ obj-$(CONFIG_TERANETICS_PHY)	+= teranetics.o
 obj-$(CONFIG_VITESSE_PHY)	+= vitesse.o
 obj-$(CONFIG_XILINX_PHY)	+= xilinx_phy.o
 obj-$(CONFIG_XILINX_GMII2RGMII) += xilinx_gmii2rgmii.o
+obj-$(CONFIG_MOTORCOMM_PHY) += yt8614-phy.o motorcomm.o
