@@ -2181,6 +2181,16 @@ config FB_XILINX
 	  Include support for the Xilinx ML300/ML403 reference design
 	  framebuffer. ML300 carries a 640*480 LCD display on the board,
 	  ML403 uses a standard DB15 VGA connector.
+	  
+config FB_VDMA
+	tristate "VDMA frame buffer support"
+	depends on FB && ARCH_ZYNQ
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	select XILINX_AXIVDMA
+	---help---
+	  Include support for the VDMA LCD reference design framebuffer.
 
 config FB_GOLDFISH
 	tristate "Goldfish Framebuffer"

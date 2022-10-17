@@ -1245,5 +1245,16 @@ config TOUCHSCREEN_ROHM_BU21023
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called bu21023_ts.
+	  
+config TOUCHSCREEN_FT5X0X
+	tristate "FT5X0X touchscreens"
+	depends on I2C
+	help
+	  Say Y here if you have a touchscreen using the ft5x0x chip
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called zforce_ts.
 
 endif

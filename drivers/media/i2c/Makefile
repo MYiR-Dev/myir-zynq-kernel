@@ -96,3 +96,5 @@ obj-$(CONFIG_VIDEO_TC358743)	+= tc358743.o
 obj-$(CONFIG_VIDEO_IMX274)	+= imx274.o
 
 obj-$(CONFIG_SDR_MAX2175) += max2175.o
+
+obj-$(CONFIG_MYIR_SII902X) += sii902x/

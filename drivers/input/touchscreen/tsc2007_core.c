@@ -348,7 +348,11 @@ static int tsc2007_probe(struct i2c_client *client,
 	i2c_set_clientdata(client, ts);
 
 	ts->client = client;
-	ts->irq = client->irq;
+
+	/*Edit by MYIR Calvin.liu*/
+	// ts->irq = client->irq;
+	ts->irq = gpio_to_irq(ts->gpio);
+	
 	ts->input = input_dev;
 
 	init_waitqueue_head(&ts->wait);

@@ -786,6 +786,9 @@ config VIDEO_S5K5BAF
 source "drivers/media/i2c/smiapp/Kconfig"
 source "drivers/media/i2c/et8ek8/Kconfig"
 
+# Added by MYRI 
+source "drivers/media/i2c/sii902x/Kconfig"
+
 config VIDEO_S5C73M3
 	tristate "Samsung S5C73M3 sensor support"
 	depends on I2C && SPI && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
